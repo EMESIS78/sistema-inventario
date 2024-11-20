@@ -3,7 +3,7 @@
 @section('content')
 <div class="container mx-auto px-4 py-6">
     <h2 class="text-2xl font-semibold mb-6">Editar Producto</h2>
-    <form action="{{ route('articulos.update', $producto->id_producto) }}" method="POST">
+    <form action="{{ route('articulos.update', $producto->id_producto) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <div class="mb-4">
@@ -21,6 +21,13 @@
         <div class="mb-4">
             <label for="ubicacion" class="block text-sm font-medium">Ubicación</label>
             <input type="text" name="ubicacion" id="ubicacion" value="{{ $producto->ubicacion }}" class="w-full border-gray-300 rounded-lg shadow-sm">
+        </div>
+        <div class="mb-4">
+            <label for="imagen" class="block text-sm font-medium">Imagen del Producto</label>
+            @if ($producto->imagen)
+                <img src="{{ asset('storage/' . $producto->imagen) }}" alt="Imagen actual" class="w-32 h-32 object-cover mb-4">
+            @endif
+            <input type="file" name="imagen" id="imagen" class="w-full border-gray-300 rounded-lg shadow-sm">
         </div>
         <div class="flex justify-end">
             <a href="{{ route('articulos.index') }}" class="btn btn-secondary mr-2">Cancelar</a>

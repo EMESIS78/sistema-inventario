@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Producto;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Storage;
 class ProductoController extends Controller
 {
     public function index()
@@ -36,6 +36,8 @@ class ProductoController extends Controller
             $validated['imagen'] = $path;
         }
 
+        dd($request->file('imagen'));
+
         Producto::create($validated);
 
         return redirect()->route('articulos.index')->with('success', 'Producto añadido exitosamente.');
@@ -54,10 +56,20 @@ class ProductoController extends Controller
             'marca' => 'required|string|max:255',
             'unidad_medida' => 'required|string|max:255',
             'ubicacion' => 'nullable|string|max:255',
+            'imagen' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
 
         ]);
 
         $producto = Producto::findOrFail($id);
+        if ($request->hasFile('imagen')) {
+            // Eliminar la imagen actual si existe
+            if ($producto->imagen) {
+                Storage::disk('public')->delete($producto->imagen);
+            }
+            // Guardar la nueva imagen
+            $validated['imagen'] = $request->file('imagen')->store('productos', 'public');
+        }
+
         $producto->update($validated);
 
         return redirect()->route('articulos.index')->with('success', 'Producto actualizado exitosamente.');

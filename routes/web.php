@@ -31,7 +31,23 @@ Route::middleware([
 
 
     Route::get('/almacenes', [AlmacenController::class, 'index'])->name('almacenes.index');
+    Route::post('/almacenes', [AlmacenController::class, 'store'])->name('almacenes.store'); // Guardar nuevo almacén
+    Route::get('/almacenes/{id}/edit', [AlmacenController::class, 'edit'])->name('almacenes.edit'); // Formulario de edición
+    Route::put('/almacenes/{id}', [AlmacenController::class, 'update'])->name('almacenes.update'); // Actualizar almacén
+    Route::delete('/almacenes/{id}', [AlmacenController::class, 'destroy'])->name('almacenes.destroy'); // Eliminar almacén
+
+
     Route::get('/inventario', [InventarioController::class, 'index'])->name('inventario.index');
+    Route::post('/inventario/ajustar/{id}', [InventarioController::class, 'ajustarInventario'])->name('inventario.ajustar');
+    Route::get('/inventario/movimientos/{idProducto}', [InventarioController::class, 'movimientosProducto'])->name('inventario.movimientos');
+    Route::get('/inventario/reporte', [InventarioController::class, 'generarReporte'])->name('inventario.reporte');
+    Route::get('/inventario/reporte-global', [InventarioController::class, 'reporteGlobal'])->name('inventario.reporte_global');
+
+    Route::get('/inventario/reporte-pdf', [InventarioController::class, 'exportarReportePDF'])->name('inventario.reporte_pdf');
+    Route::get('/inventario/reporte-xlsx', [InventarioController::class, 'exportarReporteXLSX'])->name('inventario.reporte_xlsx');
+    Route::get('/inventario/reporte-global-pdf', [InventarioController::class, 'exportarReporteGlobalPDF'])->name('inventario.reporte_global_pdf');
+    Route::get('/inventario/reporte-global-xlsx', [InventarioController::class, 'exportarReporteGlobalXLSX'])->name('inventario.reporte_global_xlsx');
+
     Route::get('/entradas', [EntradaController::class, 'index'])->name('entradas.index');
     Route::get('/salidas', [SalidaController::class, 'index'])->name('salidas.index');
     Route::get('/traslados', [TrasladoController::class, 'index'])->name('traslados.index');
