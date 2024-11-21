@@ -77,7 +77,7 @@
         </a>
 
         <a href="{{ route('inventario.reporte_global') }}"
-            class="bg-green-500 text-black px-4 py-2 rounded hover:bg-green-600">
+            class="bg-green-500 text-black px-6 py-3 rounded-lg mt-6 hover:bg-green-600 inline-block">
             Generar Reporte Global
         </a>
     </div>

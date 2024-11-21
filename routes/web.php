@@ -49,6 +49,9 @@ Route::middleware([
     Route::get('/inventario/reporte-global-xlsx', [InventarioController::class, 'exportarReporteGlobalXLSX'])->name('inventario.reporte_global_xlsx');
 
     Route::get('/entradas', [EntradaController::class, 'index'])->name('entradas.index');
+    Route::get('/entradas/create', [EntradaController::class, 'create'])->name('entradas.create');
+    Route::post('/entradas', [EntradaController::class, 'store'])->name('entradas.store');
+
     Route::get('/salidas', [SalidaController::class, 'index'])->name('salidas.index');
     Route::get('/traslados', [TrasladoController::class, 'index'])->name('traslados.index');
 });
