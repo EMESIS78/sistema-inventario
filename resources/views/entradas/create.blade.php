@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
-    <h2 class="text-2xl font-semibold mb-6 text-center">Registrar Nueva Entrada</h2>
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">Registrar Nueva Entrada</h2>
 
-    <form action="{{ route('entradas.store') }}" method="POST">
+    <form action="{{ route('entradas.store') }}" method="POST" class="bg-white shadow-md rounded-lg p-6">
         @csrf
         <div class="mb-4">
-            <label for="id_almacen" class="block text-lg font-medium text-gray-700">Almacén de Ingreso:</label>
-            <select name="id_almacen" id="id_almacen" class="block w-full mt-2 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            <label for="id_almacen" class="block text-sm font-medium text-gray-700">Almacén de Ingreso</label>
+            <select name="id_almacen" id="id_almacen" class="mt-1 block w-full p-2 border border-gray-300 rounded-lg">
                 @foreach($almacenes as $almacen)
                     <option value="{{ $almacen->id }}">{{ $almacen->nombre }}</option>
                 @endforeach
@@ -16,66 +16,82 @@
         </div>
 
         <div class="mb-4">
-            <label for="documento" class="block text-lg font-medium text-gray-700">Documento (Boleta/Factura):</label>
-            <input type="text" name="documento" id="documento" class="block w-full mt-2 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+            <label for="documento" class="block text-sm font-medium text-gray-700">Documento (Boleta/Factura)</label>
+            <input type="text" name="documento" id="documento" required
+                class="mt-1 block w-full p-2 border border-gray-300 rounded-lg">
         </div>
 
         <div class="mb-4">
-            <label for="id_proveedor" class="block text-lg font-medium text-gray-700">Proveedor:</label>
-            <input type="text" name="id_proveedor" id="id_proveedor" class="block w-full mt-2 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+            <label for="id_proveedor" class="block text-sm font-medium text-gray-700">Proveedor</label>
+            <input type="text" name="id_proveedor" id="id_proveedor" required
+                class="mt-1 block w-full p-2 border border-gray-300 rounded-lg">
         </div>
 
-        <div id="productos" class="space-y-4">
-            <div class="producto flex items-center space-x-4">
-                <div class="w-1/2">
-                    <label for="id_articulo" class="block text-lg font-medium text-gray-700">Producto:</label>
-                    <input type="text" name="productos[0][id_articulo]" class="block w-full mt-2 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+        <div id="productos" class="mb-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Productos</h3>
+            <div class="producto flex space-x-4 items-center mb-4">
+                <div class="flex-1">
+                    <label for="productos[0][id_articulo]" class="block text-sm font-medium text-gray-700">Producto</label>
+                    <input type="text" name="productos[0][id_articulo]" placeholder="Nombre del producto" required
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-lg">
                 </div>
-                <div class="w-1/4">
-                    <label for="cantidad" class="block text-lg font-medium text-gray-700">Cantidad:</label>
-                    <input type="number" name="productos[0][cantidad]" class="block w-full mt-2 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                <div class="w-32">
+                    <label for="productos[0][cantidad]" class="block text-sm font-medium text-gray-700">Cantidad</label>
+                    <input type="number" name="productos[0][cantidad]" placeholder="0" required
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-lg">
                 </div>
-                <button type="button" id="add-product" class="ml-4 px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none">Agregar Producto</button>
+                <button type="button" class="remove-product bg-red-500 text-white px-3 py-2 rounded-lg">
+                    Eliminar
+                </button>
             </div>
         </div>
 
+        <button type="button" id="add-product" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+            Añadir Producto
+        </button>
+
         <div class="mt-6">
-            <button type="submit" class="px-6 py-3 w-full text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none">Registrar Entrada</button>
+            <button type="submit"
+                class="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 font-semibold">
+                Registrar Entrada
+            </button>
         </div>
     </form>
 </div>
 
 <script>
-    document.getElementById('add-product').addEventListener('click', function() {
-        // Obtener el contenedor de los productos
-        const productosContainer = document.getElementById('productos');
+    document.addEventListener('DOMContentLoaded', function () {
+        let productIndex = 1;
 
-        // Contar cuántos productos existen actualmente
-        const productosCount = productosContainer.getElementsByClassName('producto').length;
+        document.getElementById('add-product').addEventListener('click', function () {
+            const container = document.getElementById('productos');
+            const newProduct = document.createElement('div');
+            newProduct.classList.add('producto', 'flex', 'space-x-4', 'items-center', 'mb-4');
 
-        // Crear nuevos campos para el producto
-        const nuevoProducto = document.createElement('div');
-        nuevoProducto.classList.add('producto', 'flex', 'items-center', 'space-x-4');
+            newProduct.innerHTML = `
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700">Producto</label>
+                    <input type="text" name="productos[${productIndex}][id_articulo]" placeholder="Nombre del producto" required
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-lg">
+                </div>
+                <div class="w-32">
+                    <label class="block text-sm font-medium text-gray-700">Cantidad</label>
+                    <input type="number" name="productos[${productIndex}][cantidad]" placeholder="0" required
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-lg">
+                </div>
+                <button type="button" class="remove-product bg-red-500 text-white px-3 py-2 rounded-lg">
+                    Eliminar
+                </button>
+            `;
 
-        // Contenido HTML para el nuevo producto
-        nuevoProducto.innerHTML = `
-            <div class="w-1/2">
-                <label for="id_articulo" class="block text-lg font-medium text-gray-700">Producto:</label>
-                <input type="text" name="productos[${productosCount}][id_articulo]" class="block w-full mt-2 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
-            </div>
-            <div class="w-1/4">
-                <label for="cantidad" class="block text-lg font-medium text-gray-700">Cantidad:</label>
-                <input type="number" name="productos[${productosCount}][cantidad]" class="block w-full mt-2 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
-            </div>
-            <button type="button" class="remove-product ml-4 px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 focus:outline-none">Eliminar Producto</button>
-        `;
+            container.appendChild(newProduct);
+            productIndex++;
+        });
 
-        // Añadir el nuevo producto al contenedor
-        productosContainer.appendChild(nuevoProducto);
-
-        // Agregar evento para eliminar el producto
-        nuevoProducto.querySelector('.remove-product').addEventListener('click', function() {
-            productosContainer.removeChild(nuevoProducto);
+        document.getElementById('productos').addEventListener('click', function (e) {
+            if (e.target.classList.contains('remove-product')) {
+                e.target.parentElement.remove();
+            }
         });
     });
 </script>

@@ -7,6 +7,7 @@ use App\Models\Entrada;
 use App\Models\Almacen;
 use App\Models\Proveedor;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class EntradaController extends Controller
 {
@@ -19,23 +20,32 @@ class EntradaController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the request data
-        $data = $request->validate([
+        // Validar la entrada
+        $validator = Validator::make($request->all(), [
             'id_almacen' => 'required|integer',
-            'documento' => 'required|string',
-            'id_proveedor' => 'required|string',
-            'productos' => 'required|array', // Array of products (id_articulo and cantidad)
+            'documento' => 'required|string|max:255',
+            'id_proveedor' => 'required|string|max:20',
+            'productos' => 'required|array',
+            'productos.*.id_articulo' => 'required|string',
+            'productos.*.cantidad' => 'required|integer|min:1',
         ]);
 
-        // Call the stored procedure to register the entry
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        // Convertir los productos a formato JSON
+        $productosJson = json_encode($request->productos);
+
+        // Llamar al procedimiento almacenado RegistrarEntrada
         DB::statement('CALL RegistrarEntrada(?, ?, ?, ?)', [
-            $data['id_almacen'],
-            $data['documento'],
-            $data['id_proveedor'],
-            json_encode($data['productos']) // Convert the products array to JSON
+            $request->id_almacen,
+            $request->documento,
+            $request->id_proveedor,
+            $productosJson
         ]);
 
-        // Redirect back with success message
+        // Redirigir al usuario con un mensaje de éxito
         return redirect()->route('entradas.index')->with('success', 'Entrada registrada correctamente.');
     }
 

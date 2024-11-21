@@ -53,6 +53,9 @@ Route::middleware([
     Route::post('/entradas', [EntradaController::class, 'store'])->name('entradas.store');
 
     Route::get('/salidas', [SalidaController::class, 'index'])->name('salidas.index');
+    Route::get('/salidas/create', [SalidaController::class, 'create'])->name('salidas.create'); // Para mostrar el formulario de nueva salida
+    Route::post('/salidas', [SalidaController::class, 'store'])->name('salidas.store'); // Para guardar la nueva salida
+
     Route::get('/traslados', [TrasladoController::class, 'index'])->name('traslados.index');
 });
 

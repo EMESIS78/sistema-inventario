@@ -21,10 +21,10 @@
                     <td class="border border-gray-300 px-4 py-2">{{ $entrada->id_entrada }}</td>
                     <td class="border border-gray-300 px-4 py-2">{{ $entrada->documento }}</td>
                     <td class="border border-gray-300 px-4 py-2">{{ $entrada->almacen->nombre }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ $entrada->proveedor->nombre }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ $entrada->id_proveedor }}</td>
                     <td class="border border-gray-300 px-4 py-2">{{ $entrada->created_at->format('d-m-Y') }}</td>
                     <td class="border border-gray-300 px-4 py-2">
-                        
+
                     </td>
                 </tr>
             @empty
