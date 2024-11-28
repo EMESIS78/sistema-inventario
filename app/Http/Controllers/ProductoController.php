@@ -36,7 +36,7 @@ class ProductoController extends Controller
             $validated['imagen'] = $path;
         }
 
-        dd($request->file('imagen'));
+        ($request->file('imagen'));
 
         Producto::create($validated);
 

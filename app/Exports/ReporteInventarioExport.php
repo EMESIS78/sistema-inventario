@@ -19,7 +19,6 @@ class ReporteInventarioExport implements FromView, WithStyles
 
     public function styles(Worksheet $sheet)
     {
-        // Aplicar estilos a las cabeceras (primera fila)
         $sheet->getStyle('A1:F1')->applyFromArray([
             'font' => [
                 'bold' => true,
