@@ -50,4 +50,34 @@ class SalidaController extends Controller
             return back()->withErrors(['error' => $e->getMessage()]);
         }
     }
+
+    public function buscarDetalleEntrada(Request $request)
+    {
+        $request->validate([
+            'documento' => 'required|string|max:255',
+        ]);
+
+        $documento = $request->input('documento');
+
+        try {
+            $detalleEntrada = DB::select('CALL ObtenerDetalleEntrada(?)', [$documento]);
+
+            if (empty($detalleEntrada)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se encontraron detalles para el documento proporcionado.',
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $detalleEntrada,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al buscar el detalle de la entrada: ' . $e->getMessage(),
+            ]);
+        }
+    }
 }

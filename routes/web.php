@@ -7,6 +7,7 @@ use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\SalidaController;
 use App\Http\Controllers\TrasladoController;
+use App\Http\Controllers\UsuarioController;
 
 Route::get('/', function () {
     return view('menu');
@@ -19,6 +20,7 @@ Route::middleware([
 ])->group(function () {
     Route::get('/', function () {
         return view('menu');
+        
     })->name('menu');
     Route::get('/articulos', [ProductoController::class, 'index'])->name('articulos.index');
     // Ruta para mostrar el formulario de creación de artículos
@@ -55,8 +57,18 @@ Route::middleware([
     Route::get('/salidas', [SalidaController::class, 'index'])->name('salidas.index');
     Route::get('/salidas/create', [SalidaController::class, 'create'])->name('salidas.create'); // Para mostrar el formulario de nueva salida
     Route::post('/salidas', [SalidaController::class, 'store'])->name('salidas.store'); // Para guardar la nueva salida
+    Route::post('/salidas/buscar-detalle', [SalidaController::class, 'buscarDetalleEntrada'])->name('salidas.buscarDetalle');
 
     Route::get('/traslados', [TrasladoController::class, 'index'])->name('traslados.index');
+    Route::get('/traslados/create', [TrasladoController::class, 'create'])->name('traslados.create');
+    Route::post('/traslados', [TrasladoController::class, 'store'])->name('traslados.store');
+
+    Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
+    Route::get('/usuarios/create', [UsuarioController::class, 'create'])->name('usuarios.create');
+    Route::post('/usuarios', [UsuarioController::class, 'store'])->name('usuarios.store');
+    Route::get('/usuarios/{id}/edit', [UsuarioController::class, 'edit'])->name('usuarios.edit');
+    Route::put('/usuarios/{id}', [UsuarioController::class, 'update'])->name('usuarios.update');
+    Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy'])->name('usuarios.destroy');
 });
 
 // Rutas para login y registro si no están autenticados
