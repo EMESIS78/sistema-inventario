@@ -20,6 +20,7 @@ class Entrada extends Model
         'id_almacen',
         'documento',
         'id_proveedor',
+        'user_id',
     ];
 
     // Relación con el modelo Almacen
@@ -32,5 +33,10 @@ class Entrada extends Model
     public function proveedor()
     {
         return $this->belongsTo(Proveedor::class, 'id_proveedor', 'id_ruc_proveedor');
+    }
+
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

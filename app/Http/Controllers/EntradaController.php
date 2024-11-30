@@ -8,13 +8,15 @@ use App\Models\Almacen;
 use App\Models\Proveedor;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class EntradaController extends Controller
 {
     public function index()
     {
         // List all entries if needed
-        $entradas = Entrada::all();
+        $entradas = Entrada::with('almacen', 'usuario')->get();
         return view('entradas.index', compact('entradas'));
     }
 
@@ -43,6 +45,14 @@ class EntradaController extends Controller
             $request->documento,
             $request->id_proveedor,
             $productosJson
+        ]);
+
+        // Registrar la entrada en la tabla con el usuario autenticado
+        Entrada::create([
+            'id_almacen' => $request->id_almacen,
+            'documento' => $request->documento,
+            'id_proveedor' => $request->id_proveedor,
+            'user_id' => Auth::id(), // Registrar el usuario que realiza la entrada
         ]);
 
         // Redirigir al usuario con un mensaje de éxito

@@ -20,6 +20,7 @@ class Traslado extends Model
         'id_almacen_salida',
         'id_almacen_entrada',
         'motivo',
+        'user_id', // Agregado para registrar al usuario
     ];
 
     /**
@@ -36,5 +37,11 @@ class Traslado extends Model
     public function almacenEntrada()
     {
         return $this->belongsTo(Almacen::class, 'id_almacen_entrada');
+    }
+
+    // Relación con el modelo User
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

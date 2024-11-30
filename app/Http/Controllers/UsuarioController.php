@@ -22,7 +22,6 @@ class UsuarioController extends Controller
     /**
      * Muestra el formulario para crear un nuevo usuario.
      *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {

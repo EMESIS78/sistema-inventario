@@ -12,7 +12,9 @@
                 <th class="border border-gray-300 px-4 py-2">Almacén</th>
                 <th class="border border-gray-300 px-4 py-2">Proveedor</th>
                 <th class="border border-gray-300 px-4 py-2">Fecha</th>
-                <th class="border border-gray-300 px-4 py-2">Acciones</th>
+                @if (auth()->user()->rol === 'admin')
+                <th class="border border-gray-300 px-4 py-2">Usuario</th>
+                @endif
             </tr>
         </thead>
         <tbody>
@@ -23,9 +25,9 @@
                     <td class="border border-gray-300 px-4 py-2">{{ $entrada->almacen->nombre }}</td>
                     <td class="border border-gray-300 px-4 py-2">{{ $entrada->id_proveedor }}</td>
                     <td class="border border-gray-300 px-4 py-2">{{ $entrada->created_at->format('d-m-Y') }}</td>
-                    <td class="border border-gray-300 px-4 py-2">
-
-                    </td>
+                    @if (auth()->user()->rol === 'admin')
+                    <td class="border border-gray-300 px-4 py-2">{{ $entrada->usuario->name }}</td>
+                    @endif
                 </tr>
             @empty
                 <tr>

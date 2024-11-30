@@ -11,12 +11,21 @@ class Salida extends Model
 
     protected $table = 'salidas';
     protected $primaryKey = 'id_salida';
-    protected $fillable = ['id_almacen', 'motivo'];
+
+    protected $fillable = [
+        'id_almacen',
+        'motivo',
+        'user_id', // Agregado para registrar al usuario
+    ];
 
     public function almacen()
     {
         return $this->belongsTo(Almacen::class, 'id_almacen');
     }
 
-    
+    // Relación con el modelo User
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
