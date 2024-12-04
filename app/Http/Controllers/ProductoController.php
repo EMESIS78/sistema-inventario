@@ -7,10 +7,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 class ProductoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
         // Aquí puedes obtener los artículos desde la base de datos
-        $productos = Producto::paginate(12);  // O alguna consulta más específica
+        $productos = Producto::when($search, function ($query) use ($search) {
+            $query->where('nombre', 'LIKE', "%$search%")
+                  ->orWhere('marca', 'LIKE', "%$search%")
+                  ->orWhere('unidad_medida', 'LIKE', "%$search%");
+        })->paginate(12);
 
         // Retornar la vista con los artículos
         return view('articulos.index', compact('productos'));

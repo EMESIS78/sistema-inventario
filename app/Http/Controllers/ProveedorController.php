@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Proveedor;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 
 class ProveedorController extends Controller
 {
+    public function index()
+    {
+        $proveedores = Proveedor::all();
+        return view('proveedores.index', compact('proveedores'));
+    }
+
     public function buscar($ruc)
     {
         $proveedor = Proveedor::find($ruc);

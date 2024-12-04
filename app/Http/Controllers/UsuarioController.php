@@ -59,8 +59,9 @@ class UsuarioController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $user)
+    public function edit($id)
     {
+        $user = User::findOrFail($id);
         return view('usuarios.edit', compact('user'));
     }
 
@@ -71,20 +72,25 @@ class UsuarioController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
+
+        $user = User::findOrFail($id);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
-            'rol' => 'required|string|in:admin,usuario',
+            'rol' => 'required|string|in:admin,usuario,supervisor',
         ]);
 
         $user->name = $validated['name'];
         $user->email = $validated['email'];
+        $user->rol = $validated['rol'];
 
+        // Solo actualizar el password si está presente en la solicitud
         if ($request->filled('password')) {
-            $user->password = Hash::make($validated['password']);
+            $user->password = bcrypt($validated['password']);
         }
 
         $user->save();

@@ -70,6 +70,8 @@ Route::middleware([
     Route::post('/traslados', [TrasladoController::class, 'store'])->name('traslados.store');
     Route::get('/traslados/reporte-pdf', [TrasladoController::class, 'exportarReportePDF'])->name('traslados.reporte_pdf');
     Route::get('/traslados/{id}/detalles', [TrasladoController::class, 'detalles'])->name('traslados.detalles');
+    Route::get('/traslados/{id}/guia', [TrasladoController::class, 'guia'])->name('traslados.guia');
+    Route::get('/traslados/{id}/guia', [TrasladoController::class, 'generarGuiaPDF'])->name('traslados.guia');
 
     Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
     Route::get('/usuarios/create', [UsuarioController::class, 'create'])->name('usuarios.create');
@@ -104,6 +106,7 @@ Route::middleware([
             ]);
         }
     });
+    Route::get('/proveedor', [ProveedorController::class, 'index'])->name('proveedores.index');
 });
 
 // Rutas para login y registro si no están autenticados

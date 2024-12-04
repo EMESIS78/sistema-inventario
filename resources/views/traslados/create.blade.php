@@ -46,11 +46,23 @@
                 </select>
             </div>
 
+            <div class="mb-4">
+                <label for="guia" class="block text-sm font-medium text-gray-700">Número de Guía:</label>
+                <input type="text" name="guia" id="guia"
+                    class="block w-full mt-1 rounded border-gray-300 shadow-sm" required>
+            </div>
+
             {{-- Motivo --}}
             <div class="mb-4">
                 <label for="motivo" class="block text-sm font-medium text-gray-700">Motivo:</label>
                 <input type="text" name="motivo" id="motivo"
                     class="block w-full mt-1 rounded border-gray-300 shadow-sm" value="{{ old('motivo') }}" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="placa_vehiculo" class="block text-sm font-medium text-gray-700">Placa del Vehículo:</label>
+                <input type="text" name="placa_vehiculo" id="placa_vehiculo"
+                    class="block w-full mt-1 rounded border-gray-300 shadow-sm" required>
             </div>
 
             {{-- Productos --}}
