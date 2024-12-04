@@ -8,6 +8,9 @@ use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\SalidaController;
 use App\Http\Controllers\TrasladoController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\ProveedorController;
+use Illuminate\Support\Facades\Http;
+
 
 Route::get('/', function () {
     return view('menu');
@@ -20,7 +23,6 @@ Route::middleware([
 ])->group(function () {
     Route::get('/', function () {
         return view('menu');
-        
     })->name('menu');
     Route::get('/articulos', [ProductoController::class, 'index'])->name('articulos.index');
     // Ruta para mostrar el formulario de creación de artículos
@@ -53,15 +55,21 @@ Route::middleware([
     Route::get('/entradas', [EntradaController::class, 'index'])->name('entradas.index');
     Route::get('/entradas/create', [EntradaController::class, 'create'])->name('entradas.create');
     Route::post('/entradas', [EntradaController::class, 'store'])->name('entradas.store');
+    Route::get('/entradas/reporte-pdf', [EntradaController::class, 'exportarReportePDF'])->name('entradas.reporte_pdf');
+    Route::get('/entradas/{id}/detalles', [EntradaController::class, 'detalles'])->name('entradas.detalles');
 
     Route::get('/salidas', [SalidaController::class, 'index'])->name('salidas.index');
     Route::get('/salidas/create', [SalidaController::class, 'create'])->name('salidas.create'); // Para mostrar el formulario de nueva salida
     Route::post('/salidas', [SalidaController::class, 'store'])->name('salidas.store'); // Para guardar la nueva salida
     Route::post('/salidas/buscar-detalle', [SalidaController::class, 'buscarDetalleEntrada'])->name('salidas.buscarDetalle');
+    Route::get('/salidas/reporte-pdf', [SalidaController::class, 'exportarReportePDF'])->name('salidas.reporte_pdf');
+    Route::get('/salidas/{id}/detalles', [SalidaController::class, 'detalles'])->name('salidas.detalles');
 
     Route::get('/traslados', [TrasladoController::class, 'index'])->name('traslados.index');
     Route::get('/traslados/create', [TrasladoController::class, 'create'])->name('traslados.create');
     Route::post('/traslados', [TrasladoController::class, 'store'])->name('traslados.store');
+    Route::get('/traslados/reporte-pdf', [TrasladoController::class, 'exportarReportePDF'])->name('traslados.reporte_pdf');
+    Route::get('/traslados/{id}/detalles', [TrasladoController::class, 'detalles'])->name('traslados.detalles');
 
     Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
     Route::get('/usuarios/create', [UsuarioController::class, 'create'])->name('usuarios.create');
@@ -69,6 +77,33 @@ Route::middleware([
     Route::get('/usuarios/{id}/edit', [UsuarioController::class, 'edit'])->name('usuarios.edit');
     Route::put('/usuarios/{id}', [UsuarioController::class, 'update'])->name('usuarios.update');
     Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy'])->name('usuarios.destroy');
+
+    Route::get('/proveedor/buscar/{ruc}', function ($ruc) {
+        $token = 'apis-token-11995.mTQmgcINTb0VWszAJs4L9LEFkvF9mazQ';
+
+        try {
+            $response = Http::withOptions(['verify' => false])->withHeaders([
+                'Authorization' => "Bearer $token"
+            ])->get("https://api.apis.net.pe/v1/ruc", ['numero' => $ruc]);
+
+            if ($response->ok() && isset($response['nombre'])) {
+                return response()->json([
+                    'success' => true,
+                    'nombre' => $response['nombre']
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'No se encontró información para este RUC o hubo un error en la API.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
+    });
 });
 
 // Rutas para login y registro si no están autenticados

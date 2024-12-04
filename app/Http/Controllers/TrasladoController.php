@@ -8,29 +8,40 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Almacen;
 use App\Models\Producto;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class TrasladoController extends Controller
 {
     // Mostrar todos los traslados
-    public function index()
+    public function index(Request $request)
     {
-        // Obtener todos los traslados con las relaciones de almacenes
-        $traslados = Traslado::with(['almacenSalida', 'almacenEntrada'])->get();
+        $search = $request->input('search');
+        $traslados = Traslado::with(['almacenSalida', 'almacenEntrada', 'usuario'])
+        ->when($search, function ($query) use ($search) {
+            $query->where('motivo', 'LIKE', "%$search%")
+                ->orWhereHas('almacenSalida', function ($query) use ($search) {
+                    $query->where('nombre', 'LIKE', "%$search%");
+                })
+                ->orWhereHas('almacenEntrada', function ($query) use ($search) {
+                    $query->where('nombre', 'LIKE', "%$search%");
+                });
+        })
+        ->get();
 
-        // Retornar la vista con los traslados y sus almacenes
         return view('traslados.index', compact('traslados'));
     }
 
     public function create()
     {
-        $almacenes = Almacen::all();  // Obtiene todos los almacenes
-        $productos = Producto::all();  // Obtiene todos los productos disponibles (puedes filtrar si es necesario)
+        $almacenes = Almacen::all();
+        $productos = Producto::all();
         return view('traslados.create', compact('almacenes', 'productos'));
     }
 
     public function store(Request $request)
     {
-        // Validación de los datos
         $validated = $request->validate([
             'id_almacen_salida' => 'required|exists:almacenes,id',
             'id_almacen_entrada' => 'required|exists:almacenes,id',
@@ -40,7 +51,7 @@ class TrasladoController extends Controller
             'productos.*.cantidad' => 'required|integer|min:1',
         ]);
 
-        // Verificar que haya suficiente stock en el almacén de salida
+
         foreach ($validated['productos'] as $producto) {
             $stock = DB::table('stock')
                 ->where('id_articulo', $producto['id_articulo'])
@@ -57,11 +68,12 @@ class TrasladoController extends Controller
             DB::beginTransaction();
 
             // Registrar el traslado en la base de datos o llamar al procedimiento almacenado
-            DB::statement('CALL RegistrarTraslado(?, ?, ?, ?)', [
+            DB::statement('CALL RegistrarTraslado(?, ?, ?, ?, ?)', [
                 $validated['id_almacen_salida'],
                 $validated['id_almacen_entrada'],
                 $validated['motivo'],
                 json_encode($validated['productos']), // Convertir productos a JSON
+                Auth::id(),
             ]);
 
             // Actualizar el stock en los almacenes
@@ -88,6 +100,28 @@ class TrasladoController extends Controller
         }
     }
 
+    public function exportarReportePDF()
+    {
+        if (Auth::user()->rol !== 'admin') {
+            abort(403, 'No tiene permiso para realizar esta acción.');
+        }
 
+        $traslados = Traslado::with(['almacenSalida', 'almacenEntrada', 'usuario'])->get();
+
+        $pdf = PDF::loadView('traslados.reporte', compact('traslados'));
+        return $pdf->download('reporte_traslados.pdf');
+    }
     // Mostrar un traslado específico
+    public function detalles($id)
+    {
+        $traslado = Traslado::with(['almacenSalida', 'almacenEntrada', 'usuario'])->findOrFail($id);
+
+        $detalles = DB::table('traslados_detalles')
+            ->join('productos', 'traslados_detalles.id_articulo', '=', 'productos.id_producto')
+            ->where('traslados_detalles.id_traslado', $id)
+            ->select('productos.nombre as producto', 'traslados_detalles.cantidad')
+            ->get();
+
+        return view('traslados.detalles', compact('traslado', 'detalles'));
+    }
 }

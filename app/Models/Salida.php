@@ -11,6 +11,7 @@ class Salida extends Model
 
     protected $table = 'salidas';
     protected $primaryKey = 'id_salida';
+    
 
     protected $fillable = [
         'id_almacen',

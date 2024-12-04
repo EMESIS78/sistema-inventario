@@ -15,14 +15,15 @@ class Proveedor extends Model
     // La clave primaria
     protected $primaryKey = 'id_ruc_proveedor';
 
+    // No necesitamos auto-incremento para la clave primaria
+    public $incrementing = false;
+
+
     // Las columnas que son asignables masivamente
     protected $fillable = [
         'id_ruc_proveedor',
         'nombres',
     ];
-
-    // No necesitamos auto-incremento para la clave primaria
-    public $incrementing = false;
 
     // Los proveedores no utilizan timestamps por defecto en la base de datos
     public $timestamps = true;

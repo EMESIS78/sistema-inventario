@@ -1,74 +1,83 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
-    <h2 class="text-3xl font-bold text-gray-800 mb-6">Registrar Nueva Entrada</h2>
+    <div class="container mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Registrar Nueva Entrada</h2>
 
-    <form action="{{ route('entradas.store') }}" method="POST" class="bg-white shadow-md rounded-lg p-6">
-        @csrf
-        <div class="mb-4">
-            <label for="id_almacen" class="block text-sm font-medium text-gray-700">Almacén de Ingreso</label>
-            <select name="id_almacen" id="id_almacen" class="mt-1 block w-full p-2 border border-gray-300 rounded-lg">
-                @foreach($almacenes as $almacen)
-                    <option value="{{ $almacen->id }}">{{ $almacen->nombre }}</option>
-                @endforeach
-            </select>
-        </div>
+        <form action="{{ route('entradas.store') }}" method="POST" class="bg-white shadow-md rounded-lg p-6">
+            @csrf
+            <div class="mb-4">
+                <label for="id_almacen" class="block text-sm font-medium text-gray-700">Almacén de Ingreso</label>
+                <select name="id_almacen" id="id_almacen" class="mt-1 block w-full p-2 border border-gray-300 rounded-lg">
+                    @foreach ($almacenes as $almacen)
+                        <option value="{{ $almacen->id }}">{{ $almacen->nombre }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-        <div class="mb-4">
-            <label for="documento" class="block text-sm font-medium text-gray-700">Documento (Boleta/Factura)</label>
-            <input type="text" name="documento" id="documento" required
-                class="mt-1 block w-full p-2 border border-gray-300 rounded-lg">
-        </div>
+            <div class="mb-4">
+                <label for="documento" class="block text-sm font-medium text-gray-700">Documento (Boleta/Factura)</label>
+                <input type="text" name="documento" id="documento" required
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-lg">
+            </div>
 
-        <div class="mb-4">
-            <label for="id_proveedor" class="block text-sm font-medium text-gray-700">Proveedor</label>
-            <input type="text" name="id_proveedor" id="id_proveedor" required
-                class="mt-1 block w-full p-2 border border-gray-300 rounded-lg">
-        </div>
-
-        <div id="productos" class="mb-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-3">Productos</h3>
-            <div class="producto flex space-x-4 items-center mb-4">
-                <div class="flex-1">
-                    <label for="productos[0][id_articulo]" class="block text-sm font-medium text-gray-700">Producto</label>
-                    <input type="text" name="productos[0][id_articulo]" placeholder="Nombre del producto" required
-                        class="mt-1 block w-full p-2 border border-gray-300 rounded-lg">
+            <div class="mb-4">
+                <label for="id_proveedor" class="block text-sm font-medium text-gray-700">Proveedor (RUC)</label>
+                <div class="flex">
+                    <input type="text" name="id_proveedor" id="id_proveedor" required
+                        class="block w-full p-2 border border-gray-300 rounded-l-lg">
+                    <button type="button" id="buscar-proveedor"
+                        class="bg-blue-500 text-white px-4 py-2 rounded-r-lg">Buscar</button>
                 </div>
-                <div class="w-32">
-                    <label for="productos[0][cantidad]" class="block text-sm font-medium text-gray-700">Cantidad</label>
-                    <input type="number" name="productos[0][cantidad]" placeholder="0" required
-                        class="mt-1 block w-full p-2 border border-gray-300 rounded-lg">
+            </div>
+
+            <div id="resultado-proveedor" class="text-sm text-gray-700 mt-2 hidden">
+                <strong>Razón Social:</strong> <span id="razon-social"></span>
+            </div>
+
+            <div id="productos" class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">Productos</h3>
+                <div class="producto flex space-x-4 items-center mb-4">
+                    <div class="flex-1">
+                        <label for="productos[0][id_articulo]"
+                            class="block text-sm font-medium text-gray-700">Producto</label>
+                        <input type="text" name="productos[0][id_articulo]" placeholder="Nombre del producto" required
+                            class="mt-1 block w-full p-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div class="w-32">
+                        <label for="productos[0][cantidad]" class="block text-sm font-medium text-gray-700">Cantidad</label>
+                        <input type="number" name="productos[0][cantidad]" placeholder="0" required
+                            class="mt-1 block w-full p-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <button type="button" class="remove-product bg-red-500 text-white px-3 py-2 rounded-lg">
+                        Eliminar
+                    </button>
                 </div>
-                <button type="button" class="remove-product bg-red-500 text-white px-3 py-2 rounded-lg">
-                    Eliminar
+            </div>
+
+            <button type="button" id="add-product" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                Añadir Producto
+            </button>
+
+            <div class="mt-6">
+                <button type="submit"
+                    class="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 font-semibold">
+                    Registrar Entrada
                 </button>
             </div>
-        </div>
+        </form>
+    </div>
 
-        <button type="button" id="add-product" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-            Añadir Producto
-        </button>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let productIndex = 1;
 
-        <div class="mt-6">
-            <button type="submit"
-                class="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 font-semibold">
-                Registrar Entrada
-            </button>
-        </div>
-    </form>
-</div>
+            document.getElementById('add-product').addEventListener('click', function() {
+                const container = document.getElementById('productos');
+                const newProduct = document.createElement('div');
+                newProduct.classList.add('producto', 'flex', 'space-x-4', 'items-center', 'mb-4');
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        let productIndex = 1;
-
-        document.getElementById('add-product').addEventListener('click', function () {
-            const container = document.getElementById('productos');
-            const newProduct = document.createElement('div');
-            newProduct.classList.add('producto', 'flex', 'space-x-4', 'items-center', 'mb-4');
-
-            newProduct.innerHTML = `
+                newProduct.innerHTML = `
                 <div class="flex-1">
                     <label class="block text-sm font-medium text-gray-700">Producto</label>
                     <input type="text" name="productos[${productIndex}][id_articulo]" placeholder="Nombre del producto" required
@@ -84,15 +93,41 @@
                 </button>
             `;
 
-            container.appendChild(newProduct);
-            productIndex++;
-        });
+                container.appendChild(newProduct);
+                productIndex++;
+            });
 
-        document.getElementById('productos').addEventListener('click', function (e) {
-            if (e.target.classList.contains('remove-product')) {
-                e.target.parentElement.remove();
-            }
+            document.getElementById('productos').addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-product')) {
+                    e.target.parentElement.remove();
+                }
+            });
+
+            document.getElementById('buscar-proveedor').addEventListener('click', async function() {
+                const ruc = document.getElementById('id_proveedor').value.trim();
+
+                if (!ruc) {
+                    alert('Por favor, ingresa un RUC válido.');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/proveedor/buscar/${ruc}`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        document.getElementById('resultado-proveedor').classList.remove('hidden');
+                        document.getElementById('razon-social').textContent = data.nombre;
+                    } else {
+                        console.error('Error del servidor:', data
+                        .message); // Depurar mensaje del servidor
+                        alert(data.message || 'No se encontró información para este RUC.');
+                    }
+                } catch (error) {
+                    console.error('Error en la solicitud:', error); // Depurar errores en la solicitud
+                    alert('Hubo un error al buscar el RUC. Inténtalo de nuevo.');
+                }
+            });
         });
-    });
-</script>
+    </script>
 @endsection

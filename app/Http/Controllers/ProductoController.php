@@ -10,7 +10,7 @@ class ProductoController extends Controller
     public function index()
     {
         // Aquí puedes obtener los artículos desde la base de datos
-        $productos = Producto::paginate(10);  // O alguna consulta más específica
+        $productos = Producto::paginate(12);  // O alguna consulta más específica
 
         // Retornar la vista con los artículos
         return view('articulos.index', compact('productos'));
