@@ -71,11 +71,6 @@
 
                 <!-- Botones -->
                 <div class="flex items-center justify-between">
-                    @if (Route::has('password.request'))
-                        <a class="text-sm text-indigo-500 hover:underline" href="{{ route('password.request') }}">
-                            ¿Olvidaste tu contraseña?
-                        </a>
-                    @endif
                     <x-button class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold rounded-lg">
                         Ingresar
                     </x-button>
@@ -83,11 +78,5 @@
             </form>
         </div>
 
-        <!-- Pie de página -->
-        <p class="text-white mt-4 text-sm">
-            ¿No tienes cuenta?
-            <a href="{{ route('register') }}" class="text-indigo-200 underline hover:text-indigo-300">Regístrate
-                aquí</a>
-        </p>
     </div>
 </x-guest-layout>
