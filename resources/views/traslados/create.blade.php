@@ -67,49 +67,26 @@
 
             {{-- Productos --}}
             <div id="productos" class="space-y-4">
-                @if (old('productos'))
-                    @foreach (old('productos') as $index => $producto)
-                        <div class="producto flex space-x-4 mt-4">
-                            <div class="flex-grow">
-                                <label class="block text-sm font-medium text-gray-700">Producto:</label>
-                                <select name="productos[{{ $index }}][id_articulo]"
-                                    class="block w-full mt-1 rounded border-gray-300 shadow-sm">
-                                    @foreach ($productos as $prod)
-                                        <option value="{{ $prod->id }}"
-                                            {{ $prod->id == $producto['id_articulo'] ? 'selected' : '' }}>
-                                            {{ $prod->nombre }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Cantidad:</label>
-                                <input type="number" name="productos[{{ $index }}][cantidad]"
-                                    value="{{ $producto['cantidad'] }}"
-                                    class="block w-full mt-1 rounded border-gray-300 shadow-sm" required>
-                            </div>
-                            <button type="button" class="text-red-500 remove-product">Eliminar</button>
-                        </div>
-                    @endforeach
-                @else
-                    <div class="producto flex space-x-4">
-                        <div class="flex-grow">
-                            <label class="block text-sm font-medium text-gray-700">Producto:</label>
-                            <select name="productos[0][id_articulo]"
-                                class="block w-full mt-1 rounded border-gray-300 shadow-sm">
-                                @foreach ($productos as $producto)
-                                    <option value="{{ $producto->id_producto }}">{{ $producto->nombre }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Cantidad:</label>
-                            <input type="number" name="productos[0][cantidad]"
-                                class="block w-full mt-1 rounded border-gray-300 shadow-sm" required>
-                        </div>
-                        <button type="button" class="text-red-500 remove-product">Eliminar</button>
+                <div class="producto flex space-x-4">
+                    <div class="flex-grow">
+                        <label class="block text-sm font-medium text-gray-700">Código de Barras:</label>
+                        <input type="text" name="productos[0][codigo]"
+                            class="codigo-barra-input block w-full mt-1 rounded border-gray-300 shadow-sm"
+                            placeholder="Escanea o ingresa el código de barras">
                     </div>
-                @endif
+                    <div class="flex-grow">
+                        <label class="block text-sm font-medium text-gray-700">Producto:</label>
+                        <input type="text" name="productos[0][nombre]"
+                            class="producto-nombre-input block w-full mt-1 rounded border-gray-300 shadow-sm" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Cantidad:</label>
+                        <input type="number" name="productos[0][cantidad]"
+                            class="cantidad-input block w-full mt-1 rounded border-gray-300 shadow-sm" required>
+                    </div>
+                    <button type="button" class="text-red-500 remove-product">Eliminar</button>
+                    <input type="hidden" name="productos[0][id_articulo]" class="producto-id-input">
+                </div>
             </div>
 
             <button type="button" id="add-product"
@@ -120,37 +97,82 @@
     </div>
 
     <script>
-        let productIndex = {{ old('productos') ? count(old('productos')) : 1 }};
+        document.addEventListener('DOMContentLoaded', function() {
+            const productosContainer = document.getElementById('productos');
 
-        // Añadir un producto más al formulario
-        document.getElementById('add-product').addEventListener('click', () => {
-            const container = document.createElement('div');
-            container.classList.add('producto', 'flex', 'space-x-4', 'mt-4');
-            container.innerHTML = `
-        <div class="flex-grow">
-            <label class="block text-sm font-medium text-gray-700">Producto:</label>
-            <select name="productos[${productIndex}][id_articulo]" class="block w-full mt-1 rounded border-gray-300 shadow-sm" required>
-                <option value="" selected disabled>Seleccionar producto</option>
-                @foreach ($productos as $producto)
-                    <option value="{{ $producto->id_producto }}">{{ $producto->nombre }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Cantidad:</label>
-            <input type="number" name="productos[${productIndex}][cantidad]" class="block w-full mt-1 rounded border-gray-300 shadow-sm" required>
-        </div>
-        <button type="button" class="text-red-500 remove-product">Eliminar</button>
-    `;
-            document.getElementById('productos').appendChild(container);
-            productIndex++; // Incrementar el índice para el siguiente producto
-        });
+            // Event delegation para manejar inputs dinámicos
+            productosContainer.addEventListener('change', function(event) {
+                if (event.target.classList.contains('codigo-barra-input')) {
+                    const codigo = event.target.value;
 
-        // Eliminar un producto del formulario
-        document.getElementById('productos').addEventListener('click', (event) => {
-            if (event.target.classList.contains('remove-product')) {
-                event.target.parentElement.remove();
-            }
+                    if (codigo.trim() === '') return;
+
+                    fetch('{{ route('productos.buscar.codigo') }}', {
+                            method: 'POST', // IMPORTANTE: Debe coincidir con el método configurado en `web.php`
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                codigo: codigo
+                            }) // Los datos se envían en formato JSON
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                const productoInput = event.target.closest('.producto');
+                                productoInput.querySelector('.producto-nombre-input').value = data
+                                    .producto.nombre;
+                                productoInput.querySelector('.producto-id-input').value = data.producto
+                                    .id_producto; // Llenar id_articulo
+                            } else {
+                                alert(data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Ocurrió un error al buscar el producto.');
+                        });
+                }
+            });
+
+            let productIndex = {{ old('productos') ? count(old('productos')) : 1 }};
+
+            // Añadir un producto más al formulario
+            document.getElementById('add-product').addEventListener('click', () => {
+                const container = document.createElement('div');
+                container.classList.add('producto', 'flex', 'space-x-4', 'mt-4');
+                container.innerHTML = `
+            <div class="flex-grow">
+                <label class="block text-sm font-medium text-gray-700">Código de Barras:</label>
+                <input type="text" name="productos[${productIndex}][codigo]"
+                    class="codigo-barra-input block w-full mt-1 rounded border-gray-300 shadow-sm"
+                    placeholder="Escanea o ingresa el código de barras">
+            </div>
+            <div class="flex-grow">
+                <label class="block text-sm font-medium text-gray-700">Producto:</label>
+                <input type="text" name="productos[${productIndex}][nombre]"
+                    class="producto-nombre-input block w-full mt-1 rounded border-gray-300 shadow-sm" readonly>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Cantidad:</label>
+                <input type="number" name="productos[${productIndex}][cantidad]"
+                    class="block w-full mt-1 rounded border-gray-300 shadow-sm" required>
+            </div>
+            <button type="button" class="text-red-500 remove-product">Eliminar</button>
+            <input type="hidden" name="productos[${productIndex}][id_articulo]" class="producto-id-input">
+        `;
+
+                productosContainer.appendChild(container);
+                productIndex++; // Incrementar el índice para el siguiente producto
+            });
+
+            // Eliminar un producto del formulario
+            productosContainer.addEventListener('click', (event) => {
+                if (event.target.classList.contains('remove-product')) {
+                    event.target.closest('.producto').remove();
+                }
+            });
         });
     </script>
 @endsection

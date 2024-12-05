@@ -32,7 +32,8 @@ Route::middleware([
     Route::get('/articulos/{id}/edit', [ProductoController::class, 'edit'])->name('articulos.edit');
     Route::put('/articulos/{id}', [ProductoController::class, 'update'])->name('articulos.update');
     Route::delete('/articulos/{id}', [ProductoController::class, 'destroy'])->name('articulos.destroy');
-
+    Route::get('/productos/buscar-codigo', [ProductoController::class, 'buscarPorCodigo'])->name('productos.buscar.codigo');
+    Route::post('/productos/buscar-codigo', [ProductoController::class, 'buscarPorCodigo'])->name('productos.buscar.codigo');
 
     Route::get('/almacenes', [AlmacenController::class, 'index'])->name('almacenes.index');
     Route::post('/almacenes', [AlmacenController::class, 'store'])->name('almacenes.store'); // Guardar nuevo almacén

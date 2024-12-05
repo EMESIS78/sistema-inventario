@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+
 class ProductoController extends Controller
 {
     public function index(Request $request)
@@ -13,8 +14,8 @@ class ProductoController extends Controller
         // Aquí puedes obtener los artículos desde la base de datos
         $productos = Producto::when($search, function ($query) use ($search) {
             $query->where('nombre', 'LIKE', "%$search%")
-                  ->orWhere('marca', 'LIKE', "%$search%")
-                  ->orWhere('unidad_medida', 'LIKE', "%$search%");
+                ->orWhere('marca', 'LIKE', "%$search%")
+                ->orWhere('unidad_medida', 'LIKE', "%$search%");
         })->paginate(12);
 
         // Retornar la vista con los artículos
@@ -86,5 +87,23 @@ class ProductoController extends Controller
         $producto->delete();
 
         return redirect()->route('articulos.index')->with('success', 'Producto eliminado exitosamente.');
+    }
+
+    public function buscarPorCodigo(Request $request)
+    {
+        $codigo = $request->input('codigo');
+        $producto = Producto::where('codigo', $codigo)->first();
+
+        if ($producto) {
+            return response()->json([
+                'success' => true,
+                'producto' => $producto,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Producto no encontrado',
+            ]);
+        }
     }
 }

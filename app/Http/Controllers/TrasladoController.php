@@ -65,6 +65,8 @@ class TrasladoController extends Controller
             }
         }
 
+        
+
         // Lógica para almacenar el traslado y modificar el stock
         try {
             DB::beginTransaction();
