@@ -20,11 +20,11 @@ class EntradaController extends Controller
         // List all entries if needed
         $search = $request->input('search');
         $entradas = Entrada::with('almacen', 'usuario')
-        ->when($search, function ($query) use ($search) {
-            $query->where('documento', 'LIKE', "%$search%")
-                ->orWhere('id_proveedor', 'LIKE', "%$search%");
-        })
-        ->get();
+            ->when($search, function ($query) use ($search) {
+                $query->where('documento', 'LIKE', "%$search%")
+                    ->orWhere('id_proveedor', 'LIKE', "%$search%");
+            })
+            ->get();
         return view('entradas.index', compact('entradas'));
     }
 
@@ -36,9 +36,11 @@ class EntradaController extends Controller
             'documento' => 'required|string|max:255',
             'id_proveedor' => 'required|string|max:20',
             'productos' => 'required|array',
+            'productos.*.codigo' => 'required|string|max:255',
             'productos.*.id_articulo' => 'required|string',
             'productos.*.cantidad' => 'required|integer|min:1',
         ]);
+
 
         try {
             // Verificar si el proveedor ya existe
