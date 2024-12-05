@@ -5,10 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reporte de Traslados</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f4f4f4; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            font-size: 14px;
+        }
+        h2 {
+            text-align: center;
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+            text-transform: uppercase;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+        .footer {
+            text-align: right;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -32,10 +66,13 @@
                     <td>{{ $traslado->almacenEntrada->nombre }}</td>
                     <td>{{ $traslado->usuario->name }}</td>
                     <td>{{ $traslado->motivo }}</td>
-                    <td>{{ $traslado->created_at }}</td>
+                    <td>{{ $traslado->created_at->format('d-m-Y H:i') }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+    <div class="footer">
+        <p>Reporte generado el {{ now()->format('d-m-Y H:i') }}</p>
+    </div>
 </body>
 </html>

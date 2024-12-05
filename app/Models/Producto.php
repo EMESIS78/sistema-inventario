@@ -14,6 +14,7 @@ class Producto extends Model
     protected $primaryKey = 'id_producto'; // El nombre de la clave primaria
 
     protected $fillable = [
+        'codigo',
         'nombre',
         'marca',
         'unidad_medida',

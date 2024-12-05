@@ -65,7 +65,7 @@ class TrasladoController extends Controller
             }
         }
 
-        
+
 
         // Lógica para almacenar el traslado y modificar el stock
         try {
@@ -139,7 +139,12 @@ class TrasladoController extends Controller
         $detalles = DB::table('traslados_detalles')
             ->join('productos', 'traslados_detalles.id_articulo', '=', 'productos.id_producto')
             ->where('traslados_detalles.id_traslado', $id)
-            ->select('productos.nombre as producto', 'traslados_detalles.cantidad')
+            ->select(
+                'productos.codigo', // Asegúrate de incluir el código
+                'productos.nombre as producto',
+                'productos.unidad_medida',
+                'traslados_detalles.cantidad'
+            )
             ->get();
 
         // Renderizar la vista de la guía como PDF

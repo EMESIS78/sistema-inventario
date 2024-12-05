@@ -1,13 +1,22 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto py-6">
-    <h2 class="text-2xl font-semibold mb-6">Usuarios</h2>
+<div class="container mx-auto py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-700">Usuarios</h2>
+        <a href="{{ route('usuarios.create') }}" class="flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Crear Usuario
+        </a>
+    </div>
 
     <!-- Mostrar errores de validación -->
     @if ($errors->any())
-        <div class="alert alert-danger bg-red-200 text-red-700 p-4 rounded mb-4">
-            <ul>
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+            <strong class="font-bold">¡Error!</strong>
+            <ul class="mt-2">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -15,35 +24,45 @@
         </div>
     @endif
 
-    <!-- Lista de Usuarios -->
-    <table class="min-w-full bg-white border border-gray-300 shadow-md rounded-lg">
-        <thead>
-            <tr>
-                <th class="py-2 px-4 text-left">Nombre</th>
-                <th class="py-2 px-4 text-left">Correo Electrónico</th>
-                <th class="py-2 px-4 text-left">Rol</th>
-                <th class="py-2 px-4 text-left">Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($usuarios as $usuario)
-            <tr>
-                <td class="py-2 px-4">{{ $usuario->name }}</td>
-                <td class="py-2 px-4">{{ $usuario->email }}</td>
-                <td class="py-2 px-4">{{ $usuario->rol }}</td>
-                <td class="py-2 px-4">
-                    <a href="{{ route('usuarios.edit', $usuario->id) }}" class="text-blue-500">Editar</a> |
-                    <form action="{{ route('usuarios.destroy', $usuario->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="text-red-500">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <a href="{{ route('usuarios.create') }}" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Crear Usuario</a>
+    <!-- Tabla de usuarios -->
+    <div class="overflow-hidden border border-gray-200 shadow rounded-lg">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Correo Electrónico</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @forelse ($usuarios as $usuario)
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $usuario->name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $usuario->email }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $usuario->rol }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <div class="flex justify-center space-x-2">
+                                <a href="{{ route('usuarios.edit', $usuario->id) }}" class="bg-blue-500 text-white px-3 py-1 rounded-lg shadow hover:bg-blue-600">
+                                    Editar
+                                </a>
+                                <form action="{{ route('usuarios.destroy', $usuario->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este usuario?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded-lg shadow hover:bg-red-600">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No hay usuarios registrados.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>
 @endsection

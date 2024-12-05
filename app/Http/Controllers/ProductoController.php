@@ -15,7 +15,8 @@ class ProductoController extends Controller
         $productos = Producto::when($search, function ($query) use ($search) {
             $query->where('nombre', 'LIKE', "%$search%")
                 ->orWhere('marca', 'LIKE', "%$search%")
-                ->orWhere('unidad_medida', 'LIKE', "%$search%");
+                ->orWhere('unidad_medida', 'LIKE', "%$search%")
+                ->orWhere('codigo', 'LIKE', "%$search%");
         })->paginate(12);
 
         // Retornar la vista con los artículos
@@ -30,6 +31,7 @@ class ProductoController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'codigo' => 'required|string|max:255|unique:productos,codigo',
             'nombre' => 'required|string|max:255',
             'marca' => 'required|string|max:255',
             'unidad_medida' => 'required|string|max:255',
@@ -58,6 +60,7 @@ class ProductoController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
+            'codigo' => 'required|string|max:255',
             'nombre' => 'required|string|max:255',
             'marca' => 'required|string|max:255',
             'unidad_medida' => 'required|string|max:255',
