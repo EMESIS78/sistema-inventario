@@ -133,12 +133,50 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const productosContainer = document.getElementById('productos');
+
+            // Event delegation para manejar inputs dinámicos
+            productosContainer.addEventListener('change', function(event) {
+                if (event.target.classList.contains('codigo-barra-input')) {
+                    const codigo = event.target.value;
+
+                    if (codigo.trim() === '') return;
+
+                    fetch('{{ route('productos.buscar.codigo') }}', {
+                            method: 'POST', // IMPORTANTE: Debe coincidir con el método configurado en web.php
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                codigo: codigo
+                            }) // Los datos se envían en formato JSON
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                const productoInput = event.target.closest('.producto');
+                                productoInput.querySelector('.producto-nombre-input').value = data
+                                    .producto.nombre;
+                                productoInput.querySelector('.producto-id-input').value = data.producto
+                                    .id_producto; // Llenar id_articulo
+                            } else {
+                                alert(data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Ocurrió un error al buscar el producto.');
+                        });
+                }
+            });
+
             let productIndex = {{ old('productos') ? count(old('productos')) : 1 }};
 
             // Añadir producto dinámico
             document.getElementById('add-product').addEventListener('click', () => {
                 const container = document.createElement('div');
-                container.classList.add('producto', 'flex', 'space-x-4', 'items-center', 'bg-gray-50', 'p-4', 'rounded-lg', 'shadow');
+                container.classList.add('producto', 'flex', 'space-x-4', 'items-center', 'bg-gray-50',
+                    'p-4', 'rounded-lg', 'shadow');
                 container.innerHTML = `
                 <div class="flex-grow">
                     <label class="block text-sm font-medium text-gray-700"><i class="fas fa-barcode mr-1"></i> Código de Barras:</label>
