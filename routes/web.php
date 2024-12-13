@@ -52,6 +52,8 @@ Route::middleware([
     Route::get('/inventario/reporte-xlsx', [InventarioController::class, 'exportarReporteXLSX'])->name('inventario.reporte_xlsx');
     Route::get('/inventario/reporte-global-pdf', [InventarioController::class, 'exportarReporteGlobalPDF'])->name('inventario.reporte_global_pdf');
     Route::get('/inventario/reporte-global-xlsx', [InventarioController::class, 'exportarReporteGlobalXLSX'])->name('inventario.reporte_global_xlsx');
+    Route::get('/inventario/kardexvalorado', [InventarioController::class, 'reporteKardexValorado'])->name('inventario.kardexvalorado');
+    Route::get('/inventario/kardexvalorado/pdf', [InventarioController::class, 'exportarKardexValoradoPDF'])->name('inventario.kardexvalorado.pdf');
 
     Route::get('/entradas', [EntradaController::class, 'index'])->name('entradas.index');
     Route::get('/entradas/create', [EntradaController::class, 'create'])->name('entradas.create');

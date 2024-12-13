@@ -112,4 +112,76 @@ class InventarioController extends Controller
     {
         return Excel::download(new ReporteGlobalExport, 'reporte_global.xlsx');
     }
+
+    public function reporteKardexValorado(Request $request)
+    {
+        // Filtrar fechas
+        $fechaInicio = $request->input('fecha_inicio');
+        $fechaFin = $request->input('fecha_fin');
+        $buscarProducto = $request->input('buscar_producto');
+
+        // Base de la consulta
+        $query = DB::table('entradas_detalles')
+            ->join('entradas', 'entradas_detalles.id_entrada', '=', 'entradas.id_entrada')
+            ->join('productos', 'entradas_detalles.id_articulo', '=', 'productos.id_producto')
+            ->select(
+                'productos.nombre AS producto',
+                'entradas.documento',
+                'entradas_detalles.precio_unitario',
+                DB::raw('DATE(entradas.created_at) AS fecha') // Extraer solo la fecha
+            );
+
+        // Aplicar filtros de fecha
+        if ($fechaInicio) {
+            $query->whereDate('entradas.created_at', '>=', $fechaInicio);
+        }
+        if ($fechaFin) {
+            $query->whereDate('entradas.created_at', '<=', $fechaFin);
+        }
+
+        // Filtrar por nombre del producto
+        if ($buscarProducto) {
+            $query->where('productos.nombre', 'LIKE', "%$buscarProducto%");
+        }
+
+        // Ejecutar la consulta
+        $kardexValorado = $query->orderBy('entradas.created_at', 'desc')->get();
+
+        // Retornar la vista con los datos
+        return view('inventario.kardex_valorado', compact('kardexValorado', 'fechaInicio', 'fechaFin', 'buscarProducto'));
+    }
+
+    public function exportarKardexValoradoPDF(Request $request)
+    {
+        $fechaInicio = $request->input('fecha_inicio');
+        $fechaFin = $request->input('fecha_fin');
+        $buscarProducto = $request->input('buscar_producto');
+
+        // Construir la consulta con los mismos filtros
+        $query = DB::table('entradas_detalles')
+            ->join('entradas', 'entradas_detalles.id_entrada', '=', 'entradas.id_entrada')
+            ->join('productos', 'entradas_detalles.id_articulo', '=', 'productos.id_producto')
+            ->select(
+                'productos.nombre AS producto',
+                'entradas.documento',
+                'entradas_detalles.precio_unitario',
+                DB::raw('DATE(entradas.created_at) AS fecha')
+            );
+
+        if ($fechaInicio) {
+            $query->whereDate('entradas.created_at', '>=', $fechaInicio);
+        }
+        if ($fechaFin) {
+            $query->whereDate('entradas.created_at', '<=', $fechaFin);
+        }
+        if ($buscarProducto) {
+            $query->where('productos.nombre', 'LIKE', "%$buscarProducto%");
+        }
+
+        $kardexValorado = $query->orderBy('entradas.created_at', 'desc')->get();
+
+        // Generar el PDF
+        $pdf = PDF::loadView('inventario.kardex_valorado_pdf', compact('kardexValorado', 'fechaInicio', 'fechaFin', 'buscarProducto'));
+        return $pdf->download('kardex_valorado.pdf');
+    }
 }

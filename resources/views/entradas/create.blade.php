@@ -60,6 +60,12 @@
                         <input type="number" name="productos[0][cantidad]" placeholder="0" required
                             class="block w-full mt-1 p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
+                    <div class="w-32">
+                        <label class="block text-sm font-medium text-gray-700">Precio Unitario</label>
+                        <input type="number" name="productos[0][precio_unitario]" step="0.01" placeholder="0.00"
+                            required
+                            class="precio-unitario-input block w-full mt-1 p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
                     <button type="button"
                         class="remove-product bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 focus:ring-2 focus:ring-red-500 transition">
                         <i class="fas fa-trash-alt"></i> Eliminar
@@ -84,6 +90,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const productosContainer = document.getElementById('productos');
+            const totalInput = document.getElementById('total');
             let productIndex = 1;
 
             productosContainer.addEventListener('change', function(event) {
@@ -114,6 +121,7 @@
                         .catch(error => console.error('Error al buscar producto:', error));
                 }
             });
+ 
 
             document.querySelector('form').addEventListener('submit', function(event) {
                 event.preventDefault(); // Detener el envío del formulario para inspección
@@ -184,7 +192,7 @@
                 </div>
                 <button type="button"
                     class="remove-product bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 focus:ring-2 focus:ring-red-500 transition">
-                    <i class="fas fa-trash-alt"></i>
+                    <i class="fas fa-trash-alt"></i> Eliminar
                 </button>
             `;
 

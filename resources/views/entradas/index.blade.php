@@ -46,6 +46,7 @@
                         <th class="px-6 py-3 border-b">Almacén</th>
                         <th class="px-6 py-3 border-b">Proveedor</th>
                         <th class="px-6 py-3 border-b">Fecha</th>
+                        <th class="px-6 py-3 border-b">Total</th>
                         @if (auth()->user()->rol === 'admin')
                             <th class="px-6 py-3 border-b">Usuario</th>
                         @endif
@@ -60,6 +61,7 @@
                             <td class="px-6 py-4 border-b">{{ $entrada->almacen->nombre }}</td>
                             <td class="px-6 py-4 border-b">{{ $entrada->id_proveedor }}</td>
                             <td class="px-6 py-4 border-b">{{ $entrada->created_at->format('d-m-Y') }}</td>
+                            <td class="px-6 py-4 border-b">{{ $entrada->total }}</td>
                             @if (auth()->user()->rol === 'admin')
                                 <td class="px-6 py-4 border-b">{{ $entrada->usuario->name }}</td>
                             @endif
