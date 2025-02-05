@@ -87,10 +87,6 @@
             class="flex items-center px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
             <i class="fas fa-globe mr-2"></i> Generar Reporte Global
         </a>
-        <a href="{{ route('inventario.kardexvalorado') }}"
-            class="flex items-center px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
-            <i class="fas fa-globe mr-2"></i> Generar Reporte Kardex Valorado
-        </a>
     </div>
 </div>
 

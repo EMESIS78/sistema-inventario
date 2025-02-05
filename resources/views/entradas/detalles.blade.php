@@ -29,7 +29,6 @@
                     <tr>
                         <th class="px-6 py-3 border-b">Producto</th>
                         <th class="px-6 py-3 border-b">Cantidad</th>
-                        <th class="px-6 py-3 border-b">Precio Unitario</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,8 +38,6 @@
                                     class="fas fa-box mr-2 text-indigo-500"></i>{{ $detalle->producto }}</td>
                             <td class="px-6 py-4 border-b"><i
                                     class="fas fa-sort-numeric-up-alt mr-2 text-indigo-500"></i>{{ $detalle->cantidad }}
-                            <td class="px-6 py-4 border-b"><i
-                                    class="fas fa-sort-numeric-up-alt mr-2 text-indigo-500"></i>{{ $detalle->precio_unitario }}
                             </td>
                         </tr>
                     @endforeach

@@ -39,7 +39,6 @@ class EntradaController extends Controller
             'productos.*.codigo' => 'required|string|max:255',
             'productos.*.id_articulo' => 'required|string',
             'productos.*.cantidad' => 'required|integer|min:1',
-            'productos.*.precio_unitario' => 'required|numeric|min:0.01',
         ]);
 
 
@@ -110,11 +109,7 @@ class EntradaController extends Controller
         $detalles = DB::table('entradas_detalles')
             ->join('productos', 'entradas_detalles.id_articulo', '=', 'productos.id_producto')
             ->where('entradas_detalles.id_entrada', $id)
-            ->select(
-                'productos.nombre as producto',
-                'entradas_detalles.cantidad',
-                'entradas_detalles.precio_unitario'
-            )
+            ->select('productos.nombre as producto', 'entradas_detalles.cantidad')
             ->get();
 
         return view('entradas.detalles', compact('entrada', 'detalles'));
